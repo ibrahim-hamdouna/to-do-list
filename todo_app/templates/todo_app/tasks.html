@@ -1,0 +1,109 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'css/todo_app/tasks.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <title>To Do List</title>
+</head>
+<body>
+    <main>
+        <div class="container">
+            <h2>Welcome, {{user.username|title}}!</h2>
+            <div class="stats">
+                <p>Total Tasks: {{total_tasks}}</p>
+                <p>Pending Tasks: {{pending_tasks}}</p>
+                <p>Completed Tasks: {{completed_tasks}}</p>
+            </div>
+            <div class="tasks">
+                <form method="POST">
+                    {% csrf_token %}
+                    <input type="text" name="description" placeholder="New Task..." value="{{typed_data.description}}" required>
+                    <button type="submit">Add Task</button>
+                    <input type="hidden" name="user_id" value="{{user.id}}">
+                    {% if messages %}
+                    <div class="error-messages">
+                        {% for message in messages %}
+                            <p class="message">{{ message }}</p>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </form>
+                <div class="task-list">
+                    {% for task in tasks %}
+                        <div class="task-row">
+                            <span id="text-{{ task.id }}" class="task-text {% if task.is_completed %}completed{% endif %}">
+                                {{ task.description }}
+                            </span>
+
+                            <div class="task-actions">
+                                <i class="far {% if task.is_completed %}fa-check-square{% else %}fa-square{% endif %} icon-action" 
+                                title="{% if task.is_completed %}Uncomplete Task{% else %}Complete Task{% endif %}"
+                                style="cursor: pointer;"
+                                onclick="taskAction({{ task.id }}, 'PATCH', 'complete')"></i>
+
+                                <i class="fas fa-pen icon-action" 
+                                title="Edit Task"
+                                style="cursor: pointer;" 
+                                onclick="enableEdit({{ task.id }})"></i>
+
+                                <i class="fas fa-trash icon-action text-danger" 
+                                title="Delete Task"
+                                style="color: #dc3545; cursor: pointer;"
+                                onclick="taskAction({{ task.id }}, 'DELETE', 'delete')"></i>
+                            </div>
+                        </div>
+                    {% empty %}
+                        <p class="text-muted">No tasks found. Add one above!</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </main>
+<script>
+function taskAction(taskId, method, actionType) {
+    let url = `/tasks/${actionType}/${taskId}/`;
+    
+    if (actionType === 'delete' && !confirm("Are you sure?")) return;
+
+    fetch(url, {
+        method: method,
+        headers: {
+            'X-CSRFToken': '{{ csrf_token }}',
+            'Content-Type': 'application/json'
+        }
+    }).then(response => {
+        if (response.ok) window.location.reload();
+    });
+}
+
+function enableEdit(taskId) {
+    const textSpan = document.getElementById(`text-${taskId}`);
+    const currentText = textSpan.innerText;
+
+    textSpan.innerHTML = `
+        <input type="text" id="input-${taskId}" value="${currentText}" style="width: 70%;">
+        <button onclick="saveEdit(${taskId})" style="padding: 2px 8px;">Save</button>
+        <button onclick="window.location.reload()" style="padding: 2px 8px;">Cancel</button>
+    `;
+}
+
+function saveEdit(taskId) {
+    const newText = document.getElementById(`input-${taskId}`).value;
+
+    fetch(`/tasks/update/${taskId}/`, {
+        method: 'PATCH',
+        headers: {
+            'X-CSRFToken': '{{ csrf_token }}',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ description: newText })
+    }).then(response => {
+        if (response.ok) window.location.reload();
+    });
+}
+</script>
+</body>
+</html>

@@ -76,14 +76,16 @@ WSGI_APPLICATION = 'to_do_list.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
+import os
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'to_do',          
-        'USER': 'root',             
-        'PASSWORD': '2003', 
-        'HOST': '127.0.0.1',        
-        'PORT': '3306',             
+        'NAME': os.environ.get('DB_NAME', 'to_do'),
+        'USER': os.environ.get('DB_USER', 'root'),
+        'PASSWORD': os.environ.get('DB_PASSWORD', '2003'),
+        'HOST': os.environ.get('DB_HOST', '127.0.0.1'),
+        'PORT': os.environ.get('DB_PORT', '3306'),
         'OPTIONS': {
             'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
         },

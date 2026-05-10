@@ -1,15 +1,17 @@
 from .serializers import TasksSerializer, LoginSerializer, UserSerializer
 from django.shortcuts import render, redirect, get_object_or_404
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.authentication import SessionAuthentication
-from rest_framework.permissions import IsAuthenticated
+from django.views.decorators.cache import never_cache
+from django.utils.decorators import method_decorator
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.contrib.auth import login
 from django.contrib import messages
 from rest_framework import status
 from .models import Tasks
-from django.views.decorators.cache import never_cache
-from django.utils.decorators import method_decorator# Create your views here.
+
+# Create your views here.
 
 class TasksView(APIView):
     """

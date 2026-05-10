@@ -78,11 +78,11 @@ WSGI_APPLICATION = 'to_do_list.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': os.environ.get('DB_NAME', 'sys'), 
-        'USER': os.environ.get('DB_USER', 'root'),
-        'PASSWORD': os.environ.get('DB_PASSWORD', '2003'), 
-        'HOST': os.environ.get('DB_HOST', '127.0.0.1'), 
-        'PORT': os.environ.get('DB_PORT', '4000'), 
+        'NAME': os.environ.get('DB_NAME'), 
+        'USER': os.environ.get('DB_USER'),
+        'PASSWORD': os.environ.get('DB_PASSWORD'), 
+        'HOST': os.environ.get('DB_HOST'), 
+        'PORT': os.environ.get('DB_PORT'), 
         'OPTIONS': {
             'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
             'ssl': {'ca': '/etc/ssl/certs/ca-certificates.crt'} 

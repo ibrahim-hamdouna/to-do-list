@@ -8,7 +8,8 @@ from django.contrib.auth import login
 from django.contrib import messages
 from rest_framework import status
 from .models import Tasks
-# Create your views here.
+from django.views.decorators.cache import never_cache
+from django.utils.decorators import method_decorator# Create your views here.
 
 class TasksView(APIView):
     """
@@ -80,6 +81,7 @@ class TasksView(APIView):
         Tasks.objects.get(id = id).delete() # Direct delete to save a line of code
         return Response(status=status.HTTP_204_NO_CONTENT)
 
+@method_decorator(never_cache, name='dispatch')
 class LoginView(APIView):
     """
     API View for handling user login.

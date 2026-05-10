@@ -1,1 +1,1 @@
-web: gunicorn to-do-list.wsgi:application
+web: gunicorn to_do_list.wsgi:application
